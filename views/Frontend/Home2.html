@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Navbar</title>
+
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+
+  <style>
+    
+.main{
+  display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+}
+    .center-div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 100%;
+      /* margin-bottom: 20px; */
+    }
+  
+    .scanner-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+  
+    .scanner-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+  
+    .order-placed {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+  
+    .colorful-box {
+      background-color: #ff5c0a; /* Tomato color */
+      color: white;
+      padding: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  
+    .input-container {
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 30px;
+      align-items: center;
+      width: 100%;
+    }
+  
+    .input-container input {
+      padding: 8px;
+      font-size: 16px;
+      width: 100%;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+  
+    .input-container button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #3943cb; /* Green color */
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    }
+  
+    .input-container button:hover {
+      background-color: #dc3b22;
+      padding: 10px 20px;
+    }
+  
+    /* Media queries for responsive design */
+    @media (max-width: 480px) {
+      .center-div {
+        padding: 20px;
+        max-width: 350px;
+      }
+  
+      .scanner-container img {
+        max-width: 80%;
+      }
+  
+      .input-container input {
+        font-size: 14px;
+      }
+  
+      .input-container button {
+        font-size: 14px;
+      }
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden; /* Prevent scrolling */
+    }
+    
+    /* Video background */
+    .video-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1; /* Ensure it's behind content */
+      object-fit: cover;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: rgba(51, 51, 51, 0.7); /* Slight transparency for navbar */
+      color: white;
+      z-index: 1; /* Ensure navbar is above the background */
+    }
+
+    .navbar .profile {
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar .profile img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .navbar .wallet {
+      font-weight: bold;
+    }
+
+.center-div{
+  width: 400px;
+  background-color: #4e0e7dd1;
+}
+  </style>
+</head>
+<body>
+
+  <!-- Video background -->
+  <video class="video-background" autoplay muted loop>
+    <source src="/assets/img/cry1.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <!-- Left side: Profile -->
+    <div class="profile">
+      <img src="/assets/img/bg7.jpg" width="42px" height="42px" style="border-radius: 50%; border: 1px solid white;" alt="Profile Picture">
+      <span id="username">John Doe</span>
+    </div>
+
+    <div class="home1">
+         <a href="/home1" style="text-decoration: none; color: white; font-weight: bold;"><span>Home</span></a>
+    </div>
+
+    <!-- Right side: Wallet Balance -->
+    <div class="wallet" id="amountId">
+      Wallet Balance: 00.00
+    </div>
+  </header>
+<div class="main">
+  
+  <div class="center-div">
+  
+    <!-- Scanner Container -->
+    <div class="scanner-container">
+      <p style="color: white;">Scanner</p> <!-- Replace with your actual scanner element -->
+      <img src="/assets/img/new-1.jpg" id="qrImage" width="250px" height="250px" style="border: 2px solid black;" alt="Scanner Image">
+    </div>
+  
+    <!-- Order Section -->
+    <div class="order-placed">
+      Select Order Placed
+    </div>
+  
+    <!-- Colorful Box with text -->
+    <div class="colorful-box">
+      30sec - 20%
+    </div>
+    
+    <!-- Input field and submit button -->
+    <div class="input-container">
+      <input type="number" placeholder="Enter Amount" id="amountInput">
+      <button type="submit" onclick="submitAmount()">Submit</button>
+    </div>
+  </div>
+</div>
+    
+  <script>
+async function submitAmount() {
+  const amount = document.getElementById('amountInput').value;
+  const token = localStorage.getItem('jwtToken1');
+  const decodedToken = jwt_decode(token);
+  const userId = decodedToken.id;
+
+  if (!amount || isNaN(amount) || !token) {
+    alert('Valid amount and token are required.');
+    return;
+  }
+
+  const parsedAmount = parseFloat(amount);
+  const updatedAmount = parsedAmount * 1.2;
+  if (isNaN(parsedAmount)) {
+    alert('Please enter a valid number for the amount.');
+    return;
+  }
+
+  try {
+    const response = await fetch('https://btuexchange.in/back/insertAmount', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: updatedAmount, userId }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      // alert('Amount submitted successfully!');
+      window.location.reload();
+    } else {
+      alert(result.message || 'An error occurred.');
+    }
+  } catch (error) {
+    console.error('Error submitting amount:', error);
+    alert('Error submitting amount.');
+  }
+}
+
+
+const qrImage = document.getElementById('qrImage');
+    
+    // Fetch profile data from API and update UI
+    const fetchProfileData = async () => {
+        try {
+            const response = await fetch("https://btuexchange.in/back/fetchCompanyProfile");
+            const data = await response.json();
+
+            qrImage.src = `https://btuexchange.in${data.data.paymentQRCharges1}`;
+            // addressElement.amountId = data.data.address;
+
+            loadingIndicator.style.display = 'none';
+            profileContent.style.display = 'block';
+        } catch (error) {
+            console.error("Error fetching profile data: ", error);
+        }
+    };
+
+    // Call the function to fetch data on page load
+    fetchProfileData();
+
+
+
+
+
+
+
+    
+    const fetchProfileDataofname = async () => {
+        try {
+          
+const amountId = document.getElementById('amountId');
+const username = document.getElementById('username');
+          // alert("i")
+          const token = localStorage.getItem('jwtToken1');
+  const decodedToken = jwt_decode(token);
+  const userId = decodedToken.id;
+            const response = await fetch(`https://btuexchange.in/back/fetchCompanyName/${userId}`);
+            const data = await response.json();
+// console.log(data,"data")
+            // qrImage.src = `https://btuexchange.in${data.data.paymentQRCharges1}`;
+            amountId.textContent =`wallet :  ${data.amount } `;
+            username.textContent= data.name;
+
+            // loadingIndicator.style.display = 'none';
+            // profileContent.style.display = 'block';
+        } catch (error) {
+            console.error("Error fetching profile data: ", error);
+        }
+    };
+
+    // Call the function to fetch data on page load
+    fetchProfileDataofname();
+
+
+
+    const checkTokenAndRedirect = () => {
+        const token = localStorage.getItem('jwtToken1');
+        // console.log(token)
+        if (!token) {
+            window.location.href = "/";
+        }
+    };
+
+    // Call the token check on page load
+    window.onload = checkTokenAndRedirect;
+
+
+  </script>
+
+</body>
+</html>
